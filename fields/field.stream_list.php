@@ -196,9 +196,9 @@
 					}
 				}
 			} else {
-				$pairs->appendChild(
+	/*			$pairs->appendChild(
 					$this->buildPair(null, null, 0)
-				);
+				);       */
 			}
 
 			$duplicator->appendChild($pairs);
@@ -227,11 +227,15 @@
 			$header = new XMLElement('header');
 			$label = !is_null($key) ? $key : __('New Pair');
 			$header->setAttribute('data-name', 'track');
-			$header->appendChild(new XMLElement('h4', '<strong>Track</strong>'));
+			if($i!=-1) {
+				$header->appendChild(new XMLElement('h4', '<strong>Track '.($i+1).'</strong>'));
+			} else {
+				$header->appendChild(new XMLElement('h4', '<strong>New Track</strong>'));
+			}
 			$li->appendChild($header);
 
 			// Track Name
-			$label = Widget::Label('Track Name');
+			$label = Widget::Label('Name');
 			$label->appendChild(
 				Widget::Input(
 					"fields[$element_name][$i][track_name]", $track_name, 'text', array('placeholder' => __('Track Name'))
@@ -240,14 +244,14 @@
 			$li->appendChild($label);
 
 			// Track Endpoint
-			$label = Widget::Label('Track Audio File (accepted formats: ' . implode(', ', fieldstream_list::$accepted_ext));
+			$label = Widget::Label('');
 
 
 			// symph file upload code
 			$label->setAttribute('class', 'file');
-			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));
+
 			if ($file) {
 				// Check to see if the file exists without a user having to
 				// attempt to save the entry. RE: #1649
@@ -282,9 +286,11 @@
 
 			// check for acceptable audio format
 			$accepted_ext = array('mp3','ogg','wma');
-			if(is_array($data[$i]['file'])) {
+			var_dump($data[$i]['file']);
+			if(is_array($data[$i]['file']) && !empty($data[$i]['file']['name']) ) {
 				if( !in_array(General::getExtension($data[$i]['file']['name']), fieldstream_list::$accepted_ext) ) {
 					$message = __('%s is not a valid file format for streaming, try one of the following: %s.', array( General::getExtension($data[$i]['file']['name']), implode(', ',$accepted_ext)) );
+					echo "hello";
 					return self::__INVALID_FIELDS__;
 				}
 			}
@@ -311,7 +317,7 @@
 						"SELECT * FROM `sym_entries_data_%s` WHERE `entry_id` = %d AND `track_name` = '%s' LIMIT 1",
 						$this->get('id'),
 						$entry_id,
-						$data[$i]['track_name']
+						mysql_real_escape_string($data[$i]['track_name'])
 					));
 
 					$existing_file = '/' . trim($row['file'], '/');

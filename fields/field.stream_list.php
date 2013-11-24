@@ -371,8 +371,8 @@
 				}
 
 
-				$abs_path = DOCROOT . '/workspace/album-files/';
-				$rel_path = '/album-files/';
+				$abs_path = DOCROOT . '/workspace/track_samples/';
+				$rel_path = '/track_samples/';
 
 				$data[$i]['file']['name'] = Lang::createFilename($data[$i]['file']['name']);
 				$file = rtrim($rel_path, '/') . '/' . trim($data[$i]['file']['name'], '/');

@@ -286,11 +286,9 @@
 
 			// check for acceptable audio format
 			$accepted_ext = array('mp3','ogg','wma');
-			var_dump($data[$i]['file']);
 			if(is_array($data[$i]['file']) && !empty($data[$i]['file']['name']) ) {
 				if( !in_array(General::getExtension($data[$i]['file']['name']), fieldstream_list::$accepted_ext) ) {
 					$message = __('%s is not a valid file format for streaming, try one of the following: %s.', array( General::getExtension($data[$i]['file']['name']), implode(', ',$accepted_ext)) );
-					echo "hello";
 					return self::__INVALID_FIELDS__;
 				}
 			}
@@ -354,7 +352,7 @@
 							"SELECT `track_name`, `file`, `mimetype`, `size`, `meta` FROM `sym_entries_data_%d` WHERE `entry_id` = %d AND `track_name` = '%s'",
 							$this->get('id'),
 							$entry_id,
-							$data[$i]['track_name']
+							 mysql_real_escape_string($data[$i]['track_name'])
 						));
 
 						$result['track_name'][$i] =		$row['track_name'];
@@ -377,11 +375,17 @@
 				$data[$i]['file']['name'] = Lang::createFilename($data[$i]['file']['name']);
 				$file = rtrim($rel_path, '/') . '/' . trim($data[$i]['file']['name'], '/');
 
+				var_dump(Array(
+					$abs_path, $data[$i]['file']['name'], $data[$i]['file']['tmp_name'],
+					Symphony::Configuration()->get('write_mode', 'file')
+				));				
+
 				// Attempt to upload the file:
 				$uploaded = General::uploadFile(
 					$abs_path, $data[$i]['file']['name'], $data[$i]['file']['tmp_name'],
 					Symphony::Configuration()->get('write_mode', 'file')
 				);
+
 
 				if ($uploaded === false) {
 					$message = __(

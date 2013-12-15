@@ -375,11 +375,6 @@
 				$data[$i]['file']['name'] = Lang::createFilename($data[$i]['file']['name']);
 				$file = rtrim($rel_path, '/') . '/' . trim($data[$i]['file']['name'], '/');
 
-				var_dump(Array(
-					$abs_path, $data[$i]['file']['name'], $data[$i]['file']['tmp_name'],
-					Symphony::Configuration()->get('write_mode', 'file')
-				));				
-
 				// Attempt to upload the file:
 				$uploaded = General::uploadFile(
 					$abs_path, $data[$i]['file']['name'], $data[$i]['file']['tmp_name'],
